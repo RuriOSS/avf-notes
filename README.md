@@ -8,17 +8,22 @@
 > AVF vm is still in early stage, and there are many things that can cause data loss or even device crash. So, please be careful when using it.
 >
 > It's very very not recommended to use AVF vm for any production environment.
+>
+> Be aware of your mental health. Patience is key in life. 
+> > "Guest/Host panic is just like some sex play"
 
 # Requirements:
 - Rooted Android device
 - Has pvmfw partition
-- For some devices like Snapdragon 8 Gen 2, you might need to port pvmfw firmware yourself.
+- For some devices like Snapdragon 8 Gen 2, you might need to port pvmfw firmware yourself. It might be a long night, get some coffee and good music, and enjoy.
 - For Snapdragon devices, /dev/gunyah should exist.
 - For MTK devices, /dev/gzvm should exist.
 - For pixel 6/6 Pro, you might need to enable pkvm in fastboot.
 - For other devices like Exynos, /dev/kvm should exist.
 
 # For Tensor pkvm:
+- Device: pixel 7a
+
 just run like:
 ```sh
 /apex/com.android.virt/bin/crosvm run \
@@ -30,6 +35,8 @@ just run like:
         --block fedora.img,root vmlinux
 ```
 # For MTK GenieZone:
+- Device: Oneplus Ace 5 ultra, MTK Dimensity 9400+
+
 ```sh
 /apex/com.android.virt/bin/crosvm run \
     --disable-sandbox \
@@ -46,8 +53,10 @@ just run like:
     vmlinuz
 ```
 # For Snapdragon 8 Elite:
+- Device: Lenovo Y700 Gen 4, Snapdragon 8 Elite
+
 ```sh
-LD_PRELOAD= /apex/com.android.virt/bin/crosvm --log-level debug run \
+/apex/com.android.virt/bin/crosvm --log-level debug run \
    --disable-sandbox --no-balloon --protected-vm-without-firmware --swiotlb 256 --socket vm.socket \
    --params "root=/dev/vda rw" --mem 2048 --cpus 4 \
    --net tap-name=$ifname --shared-dir /sdcard/shared:shared:type=fs \
