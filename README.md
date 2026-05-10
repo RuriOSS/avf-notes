@@ -22,7 +22,7 @@
 - For other devices like Exynos, /dev/kvm should exist.
 
 # For Tensor pkvm:
-- Device: pixel 7a
+- Device: Pixel 7a, Tensor G2
 
 just run like:
 ```sh
@@ -64,7 +64,7 @@ just run like:
 ```
 
 # The swiotlb game:
-Seems the I/O logic of crosvm is very stupid. If you write a large file to disk, like `cp /dev/zero ./test`, Explosion! Your vm crashes.      
+Seems the I/O syncing logic of crosvm is very stupid. If you write some large files to disk, like `cp /dev/zero ./test`, Explosion! Your vm crashes.      
 On my device with MTK Dimensity 9400+, I can set swiotlb to 512 to mitigate the issue. But on Snapdragon 8 Elite, it will make my device crash and reboot.      
 The kernel panic message on Qualcomm crashdump page is like the blazing crimson eyes of a yandere girlfriend, her voice low and chilling as she demands: "Darling...why? Why did you give her so many resources? I'm the only one who's perfect for you... I should be your one and only...exclusively..."      
 So, as the kernel always says yakimochi, seems swiotlb is max to 256M on Snapdragon 8 Elite. But with such a low swiotlb, vm will crash when writing large files. So I can only try to cast some magic spells for the start-up commands like a mahou shoujo.       
