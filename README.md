@@ -3,6 +3,12 @@
 > WIP
 # Warning:
 >[!WARNING]
+> This document is last edited on 2026-05, with android 16 environment. So, some information in this document might be outdated.
+>
+> I'm not a professional developer, be careful of wrong information, and feel free to correct me or make a pull request.
+
+
+>[!WARNING]
 > AVF vm is a good toy, a toy, but anytime before you put any important data in it, make sure you have a backup; anytime before you deploy any important service on it, make sure to at least do the stress test for a while. 
 >
 > AVF vm is still in early stage, and there are many things that can cause data loss or even device crash. So, please be careful when using it.
