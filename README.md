@@ -3,7 +3,7 @@
 > WIP
 # Warning:
 >[!WARNING]
-> This document is last edited on 2026-05, with android 16 environment. So, some information in this document might be outdated.
+> This document is last edited on May 2026, with android 16 environment. So, some information in this document might be outdated.
 >
 > I'm not a professional developer, be careful of wrong information, and feel free to correct me or make a pull request.
 
