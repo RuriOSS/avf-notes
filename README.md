@@ -1,6 +1,13 @@
 # WIP DOCUMENT:
 >[!WARNING]
 > WIP
+# Warning:
+>[!WARNING]
+> AVF vm is a good toy, a toy, but anytime before you put any important data in it, make sure you have a backup; anytime before you deploy any important service on it, make sure to at least do the stress test for a while. 
+>
+> AVF vm is still in early stage, and there are many things that can cause data loss or even device crash. So, please be careful when using it.
+>
+> It's very very not recommended to use AVF vm for any production environment.
 
 # Requirements:
 - Rooted Android device
