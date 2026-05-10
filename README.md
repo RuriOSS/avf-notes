@@ -9,7 +9,8 @@
 >
 > It's very very not recommended to use AVF vm for any production environment.
 >
-> Be aware of your mental health. Patience is key in life. 
+> Be aware of your mental health. 
+> Patience is key in life. 
 > > "The vm Guest/Host panic is just like some sex play"
 
 # Requirements:
@@ -21,6 +22,9 @@
 - For pixel 6/6 Pro, you might need to enable pkvm in fastboot.
 - For other devices like Exynos, /dev/kvm should exist.
 
+# Introduction:
+AVF (Android Virtualization Framework) is a new feature introduced in Android 14, which allows users to run virtual machines on their Android devices. But, it's not qemu-friendly, in fact, it's even crosvm-only for MediaTek devices now. And language-level memory safety does not equal to hardware-level memory safety, even not logical-level memory safety. So, at least based on my experience, it's not a production-ready feature.       
+Anyway, running a full mainline Linux kernel on my Android device is exciting. I scream for it, so let's have a Waku Waku adventure!            
 # For Tensor pkvm:
 - Device: Pixel 7a, Tensor G2
 
@@ -66,7 +70,7 @@
 Seems the I/O syncing logic of crosvm is very stupid. If you write some large files to disk, like `cp /dev/zero ./test`, Explosion! Your vm crashes.      
 On my device with MTK Dimensity 9400+, I can set swiotlb to 512 to mitigate the issue. But on Snapdragon 8 Elite, it will make my device crash and reboot.      
 The kernel panic message on Qualcomm crashdump page is like the blazing crimson eyes of a yandere girlfriend, her voice low and chilling as she demands: "Darling...why? Why did you give her so many resources? I'm the only one who's perfect for you... I should be your one and only...exclusively..."      
-So, as the kernel always says "yakimochi...", seems swiotlb is max to 256M on Snapdragon 8 Elite. But with such a low swiotlb, vm will crash when writing large files. So I can only try to cast some magic spells for the start-up commands like a mahou shoujo.       
+So, as the kernel always says "yakimochi..." (jealousy) when running vm, seems swiotlb is max to 256M on Snapdragon 8 Elite. But with such a low swiotlb, vm will crash when writing large files. So I can only try to cast some magic spells for the start-up commands like a mahou shoujo.       
 `--unmap-guest-memory-on-fork` will protect the host from crashing, but vm cannot avoid crashing with 512M swiotlb or when writing large files. And, this feature will cause guest immediate crash when mounting shared directory with virtiofs.      
 If you have any idea about this, please let me know.      
 # See also:
