@@ -16,7 +16,6 @@
 > It's very very not recommended to use AVF vm for any production environment.
 >
 > Be aware of your mental health. 
->
 > Patience is key in life. 
 > > "Tons of vm Guest/Host panic is just like a sex play"
 
@@ -85,6 +84,7 @@ On my device with MTK Dimensity 9400+, I can set swiotlb to 512 to mitigate the 
 
 
 > The kernel panic message on Qualcomm crashdump page is like the blazing crimson eyes of a yandere girlfriend, her voice low and chilling as she demands: "Darling...why? Why did you give her so many resources? I'm the only one who's perfect for you... I should be your one and only...exclusively..."      
+
 So, as the kernel always says "yakimochi..." (jealousy) when running vm, seems swiotlb is max to 256M on Snapdragon 8 Elite. But with such a low swiotlb, vm will crash when writing large files. So I can only try to write some magic spells for the start-up commands, like a mahou shoujo :<       
 
 
