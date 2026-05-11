@@ -43,7 +43,7 @@ Anyway, running a full mainline Linux kernel on my Android device is exciting. I
         --gpu-backend=virglrenderer \
         --disable-sandbox --swiotlb 64 \
         --params 'loglevel=0' --mem 4096 --cpus 8 \
-        --net tap-name=$ifname \
+        --net tap-name=crosvm_tap \
         --initrd initrd.img --socket vm.sock \
         --block fedora.img,root vmlinux
 ```
@@ -65,14 +65,14 @@ Anyway, running a full mainline Linux kernel on my Android device is exciting. I
     --block debian.img,root \
     vmlinuz
 ```
-# For Snapdragon 8 Elite:
+# For Snapdragon Gunyah:
 - Device: Lenovo Y700 Gen 4, Snapdragon 8 Elite
 
 ```sh
 /apex/com.android.virt/bin/crosvm --log-level debug run \
    --disable-sandbox --no-balloon --protected-vm-without-firmware --swiotlb 256 --socket vm.socket \
    --params "root=/dev/vda rw" --mem 2048 --cpus 4 \
-   --net tap-name=$ifname --shared-dir /sdcard/shared:shared:type=fs \
+   --net tap-name=crosvm_tap --shared-dir /sdcard/shared:shared:type=fs \
    --block root_part,root,async-executor=epoll,sparse=false,packed-queue=true,multiple-workers=true,direct,block-size=4096 --async-executor epoll  /data/local/tmp/kernel
 ```
 
