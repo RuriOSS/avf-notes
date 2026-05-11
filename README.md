@@ -83,6 +83,7 @@ In one word, it's okey for a testing environment, but you'd better do not use it
 I also tried to compile the latest crosvm, minijail is a superhell, it cannot be linked properly in termux. I tried to just disable all default features and compile only the core, crosvm works, but all the problem still exists as before.      
 ## See also:
 https://github.com/polygraphene/gunyah-on-sd-guide/issues/14      
+I have also wrote about the disk I/O problem here.         
 If you have any idea about this, please let me know.      
 # See also:
 - https://github.com/Droid-VM/DroidVM
