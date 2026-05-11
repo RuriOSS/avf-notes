@@ -72,7 +72,7 @@ Anyway, running a full mainline Linux kernel on my Android device is exciting. I
    --block root_part,root,async-executor=epoll,sparse=false,packed-queue=true,multiple-workers=true,direct,block-size=4096 --async-executor epoll  /data/local/tmp/kernel
 ```
 
-# The swiotlb game:
+# The swiotlb galgame:
 Seems the I/O syncing logic of crosvm is very stupid. If you write some large files to disk, like `cp /dev/zero ./test`, Explosion! Your vm crashes.      
 On my device with MTK Dimensity 9400+, I can set swiotlb to 512 to mitigate the issue. But on Snapdragon 8 Elite, it will make my device crash and reboot.      
 The kernel panic message on Qualcomm crashdump page is like the blazing crimson eyes of a yandere girlfriend, her voice low and chilling as she demands: "Darling...why? Why did you give her so many resources? I'm the only one who's perfect for you... I should be your one and only...exclusively..."      
@@ -81,6 +81,8 @@ So, as the kernel always says "yakimochi..." (jealousy) when running vm, seems s
 And, even with 256M large swiotlb and only 2048M memory, disk I/O in vm is unstable after my device has 21 hours uptime. 1024M is also sometimes unstable now, seems 512M is okey, test it yourself.     
 In one word, it's okey for a testing environment, but you'd better do not use it to deploy a service.           
 I also tried to compile the latest crosvm, minijail is a superhell, it cannot be linked properly in termux. I tried to just disable all default features and compile only the core, crosvm works, but all the problem still exists as before.      
+## See also:
+https://github.com/polygraphene/gunyah-on-sd-guide/issues/14      
 If you have any idea about this, please let me know.      
 # See also:
 - https://github.com/Droid-VM/DroidVM
