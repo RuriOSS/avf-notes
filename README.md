@@ -92,6 +92,8 @@ So, as the kernel always says "yakimochi..." (jealousy) when running vm, seems s
 
 
 And, even with 256M large swiotlb and only 2048M memory, disk I/O in vm is unstable after my device has 21 hours uptime. 1024M is also sometimes unstable now, seems 512M is okey, test it yourself.     
+>"Everything is I/O on Linux, when I/O's unstable, everything is cooked..."
+
 In one word, it's okey for a testing environment, but you'd better do not use it to deploy a service.     
 
 
