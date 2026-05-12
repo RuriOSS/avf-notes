@@ -34,7 +34,9 @@ AVF (Android Virtualization Framework) is a new feature introduced in Android 14
 But, AVF used a new virtualization backend written in rust, the crosvm. Rust is not a silver bullet. As we know, language-level memory safety does not equal to hardware-level memory safety, even not logical-level memory safety. So, at least based on my experience, it's not a production-ready feature.       
 
 
-Anyway, running a full mainline Linux kernel on my Android device is exciting. I scream for it, so let's have a Waku Waku adventure!            
+Anyway, running a full mainline Linux kernel on my Android device is exciting. I scream for it, so let's have a Waku Waku adventure!           
+# Mounting rootfs:
+On some devices, loop mounting an image is banned by SELinux, for example on my Oneplus Ace 5 Ultra. So If you cannot loop-mount it properly, try `setenforce 0`(Dangerous!!! Do it if you really know what you're doing), try editing SELinux policies, try to make rootfs on another device, or try to migrate tarball from erofs in vm.      
 # Tensor pkvm:
 - Device: Pixel 7a, Tensor G2
 - Android 16
