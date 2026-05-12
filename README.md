@@ -1,6 +1,4 @@
 # Warning:
->[!WARNING]
-> WIP Document
 
 >[!WARNING]
 > This document is last edited on May 2026, based on android 16. So, some information in this document might be outdated.
@@ -39,7 +37,7 @@ Anyway, running a full mainline Linux kernel on my Android device is exciting. I
 # For Tensor pkvm:
 - Device: Pixel 7a, Tensor G2
 - Android 16
-
+### Start-up command:
 ```sh
 /apex/com.android.virt/bin/crosvm run \
         --gpu-backend=virglrenderer \
@@ -56,7 +54,7 @@ As AVF/crosvm is developed by Google, it will be more stable and better optimize
 # For MTK GenieZone:
 - Device: Oneplus Ace 5 ultra, MTK Dimensity 9400+
 - Android 16
-
+### Start-up command:
 ```sh
 /apex/com.android.virt/bin/crosvm run \
     --disable-sandbox \
@@ -79,13 +77,15 @@ As AVF/crosvm is developed by Google, it will be more stable and better optimize
 
 # For Snapdragon Gunyah:
 - Device: Lenovo Y700 Gen 4, Snapdragon 8 Elite
-
+### Start-up command:
 ```sh
 /apex/com.android.virt/bin/crosvm --log-level debug run \
-   --disable-sandbox --no-balloon --protected-vm-without-firmware --swiotlb 256 --socket vm.socket \
+   --disable-sandbox --no-balloon --protected-vm-without-firmware \
+   --swiotlb 256 --socket vm.socket \
    --params "root=/dev/vda rw" --mem 2048 --cpus 4 \
    --net tap-name=crosvm_tap --shared-dir /sdcard/shared:shared:type=fs \
-   --block root_part,root,async-executor=epoll,sparse=false,packed-queue=true,multiple-workers=true,direct,block-size=4096 --async-executor epoll  /data/local/tmp/kernel
+   --block root_part,root,async-executor=epoll,sparse=false,packed-queue=true,multiple-workers=true,direct,block-size=4096 \
+   --async-executor epoll  /data/local/tmp/kernel
 ```
 ### note:
 - You might get better experience with qemu, but I didn't test it.
@@ -208,7 +208,8 @@ So don't be surprised if you see the weird performance in vm, it's just like a c
 If you have any idea of this, please let me know.
 # About the author:
 - Moe-hacker in RuriOSS     
-- "Devices Have Limits, But Tech Doesn't".
+
+"Devices Have Limits, But Tech Doesn't"
 # See also:
 - https://github.com/Droid-VM/DroidVM
 - https://github.com/polygraphene/gunyah-on-sd-guide
