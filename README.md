@@ -1,9 +1,11 @@
 # Warning:
 
 >[!WARNING]
-> This document is last edited on May 2026, based on android 16. So, some information in this document might be outdated.
+> This document is last edited on May 2026, based on android 16. Some information in this document might be outdated.
 >
-> Seems the version of crosvm is always 0.1.0, so I used crosvm in com.android.virt on my device to write this doc. Firmware/crosvm version can make many issues unreproducible, you have to test the things yourself.
+> Seems the version of crosvm is always 0.1.0, so I used crosvm in com.android.virt on my device to write this doc. 
+>
+> Different firmware/crosvm version can make many issues unreproducible, you have to test the things yourself.
 >
 > I'm not a vm/hw developer, be careful of wrong information, and feel free to correct me or make a pull request.
 
@@ -31,14 +33,16 @@ And, please read [gunyah-on-sd-guide](https://github.com/polygraphene/gunyah-on-
 # Background:
 AVF (Android Virtualization Framework) is a new feature introduced in Android 14, which allows users to run virtual machines on their Android devices.
 
-But, AVF used a new virtualization backend written in rust, the crosvm. Rust is not a silver bullet. As we know, language-level memory safety does not equal to hardware-level memory safety, even not logical-level memory safety. So, at least based on my experience, it's not a production-ready feature.       
+But, AVF used a new virtualization backend written in rust, the crosvm. Rust is not a silver bullet. As we know, language-level memory safety does not equal to hardware-level memory safety, even not logical-level memory safety. So at least based on my experience, it's not a production-ready feature.       
 
 
 Anyway, running a full mainline Linux kernel on my Android device is exciting. I scream for it, so let's have a Waku Waku adventure!           
 # Mounting rootfs:
-On some devices, loop mounting an image is banned by SELinux, for example Oneplus Ace 5 Ultra. So If you cannot loop-mount it properly, try `setenforce 0`(Dangerous!!! Do it if you really know what you're doing), try editing SELinux policies, try to make rootfs on another device, or try to migrate tarball from erofs in vm.      
+On some devices, loop mounting an image is banned by SELinux, for example Oneplus Ace 5 Ultra.       
+If you cannot loop-mount your rootfs properly, try `setenforce 0`(Dangerous!!! Do it if you really know what you're doing), try editing SELinux policies, try to make rootfs on another device, or try to migrate tarball from erofs in vm.      
 # Tensor pkvm:
-- Device: Pixel 7a, Tensor G2
+- Pixel 7a
+- Tensor G2
 - Android 16
 ### Start-up command:
 ```sh
@@ -51,11 +55,12 @@ On some devices, loop mounting an image is banned by SELinux, for example Oneplu
         --block fedora.img,root vmlinux
 ```
 ### note:
-You'll have the best experience on Google's own Tensor chips, with general pkvm support and always up-to-date firmware maintenance.           
+You'll have the best experience on Tensor chips, with general pkvm support and always up-to-date firmware maintenance.         
+As AVF/crosvm is developed by Google, it will be more stable and better optimized.         
 With the latest GrapheneOS, android 16, official Terminal app can even have display output in vm.      
-As AVF/crosvm is developed by Google, it will be more stable and better optimized on Tensor chips.       
 # MTK GenieZone:
-- Device: Oneplus Ace 5 ultra, MTK Dimensity 9400+
+- Oneplus Ace 5 ultra
+- MTK Dimensity 9400+
 - Android 16
 ### Start-up command:
 ```sh
@@ -73,13 +78,15 @@ As AVF/crosvm is developed by Google, it will be more stable and better optimize
     --block debian.img,root \
     vmlinuz
 ```
-### note:
+### NOTE:
 - MTK GenieZone does not have qemu support.
 - 512M swiotlb is required to avoid vm crash when writing large files to disk.
 - If you lower the swiotlb to 64M (default value), good luck to you. On my device, disk I/O will be very unstable.
 
 # Snapdragon Gunyah:
-- Device: Lenovo Y700 Gen 4, Snapdragon 8 Elite
+- Lenovo Y700 Gen 4
+- Snapdragon 8 Elite
+- Android 16
 ### Start-up command:
 ```sh
 /apex/com.android.virt/bin/crosvm --log-level debug run \
@@ -90,7 +97,7 @@ As AVF/crosvm is developed by Google, it will be more stable and better optimize
    --block root_part,root,async-executor=epoll,sparse=false,packed-queue=true,multiple-workers=true,direct,block-size=4096 \
    --async-executor epoll  /data/local/tmp/kernel
 ```
-### note:
+### NOTE:
 - You might get better experience with qemu, but I didn't test it.
 - swiotlb is max to 256M on my device, or it will cause device crash and reboot.
 - It's the most unstable one among the three when using original /apex/com.android.virt/bin/crosvm on my device.
@@ -168,12 +175,15 @@ gvforwarder >/dev/null 2>&1 &
 sleep 2
 ip route add default via 192.168.127.1
 ```
-### note:
+### NOTE:
 - Compile gvisor-tap-vsock yourself, and also copy it to your vm.
 - I should apologize that I really cannot find the original tutorial, If you have it, please let me know.
 
 
 # Swiotlb GalGame:
+>[!WARNING]
+>Based on my experience on Android 16, May 12 2026. Be aware of outdated information or device/firmware differences.
+
 Seems the I/O syncing logic of crosvm is crazy. If you write some large files to disk, like `cp /dev/zero ./test`, Explosion! Your vm crashes.      
 
 On my device with MTK Dimensity 9400+, I can set swiotlb to 512M to mitigate the issue. But on Snapdragon 8 Elite, it will make my device crash and reboot.      
@@ -185,15 +195,12 @@ So, as the kernel always says "yakimochi..." (jealousy) when running vm, seems s
 
 `--unmap-guest-memory-on-fork` will protect the host from crashing, but vm cannot avoid crashing with 512M swiotlb or when writing large files. And, this feature will cause guest immediate crash when mounting shared directory with virtiofs.      
 
-And, even with 256M large swiotlb and only 2048M memory, disk I/O in vm is unstable after my device has 21 hours uptime. 1024M is also sometimes unstable now, seems 512M is okey, test it yourself.     
+Even with 256M large swiotlb and only 2048M memory, disk I/O in vm is unstable after my device has 21 hours uptime. 1024M is also sometimes unstable now, seems 512M is okey, test it yourself.     
 > "Everything is I/O on Linux, when I/O's unstable, everything is cooked..."
 
 In one word, it's okey for a testing environment, but you'd better do not use it to deploy a service.     
 
-I also tried to compile the latest crosvm, minijail is a superhell, it cannot be linked properly in termux. I tried to just disable all default features and compile only the core, crosvm works, but all the problem still exists as before.      
-### See also:
-https://github.com/polygraphene/gunyah-on-sd-guide/issues/14      
-I have also wrote about the disk I/O problem here.         
+I also tried to compile the latest crosvm, minijail is a superhell, it cannot be linked properly in termux. I tried to just disable all default features and compile only the core, crosvm works, but all the problem still exists as before.            
 ### Possible solutions:
 - Set 512M swiotlb, if you use MTK device.
 - Switch to Pixel with Tensor, and get the latest firmware.
@@ -202,13 +209,16 @@ I have also wrote about the disk I/O problem here.
 - Try DroidVM, or maybe QEMU.
 
 Or if you have any idea, please let me know.
+### See also:
+https://github.com/polygraphene/gunyah-on-sd-guide/issues/14      
+I have also wrote about the disk I/O problem here.   
 
 # Performance Cosplay:
 In the vm, you'll see crazy disk I/O speed high to Gbps level, every block is hanging in cache, waiting to just have a savage oom.          
 You'll also see very low pipe-based context switch speed.        
-So don't be surprised if you see the weird performance in vm, it's just like a cosplay.        
+So don't be surprised if you see the weird performance in vm, it's just a cosplay.        
 
-If you have any idea of this, please let me know.
+If you have any idea to improve this issue, please let me know.
 # About the author:
 - Moe-hacker in RuriOSS     
 
