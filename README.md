@@ -10,10 +10,7 @@
 
 >[!WARNING]
 > AVF vm is a good toy, just a toy. Anytime before you put any important data in it, make sure you have a backup; anytime before you deploy any important service on it, make sure to at least do the stress test for a while. 
->
 > AVF vm is still in early stage, and there are many things that can cause data loss or device crash. So, please be careful when using it.
->
-> It's very very not recommended to use AVF vm for any production environment.
 >
 > Be aware of your mental health. 
 > Patience is key in life. 
@@ -47,6 +44,9 @@ Anyway, running a full mainline Linux kernel on my Android device is exciting. I
         --initrd initrd.img --socket vm.sock \
         --block fedora.img,root vmlinux
 ```
+### note:
+You'll definitely have the best experience on Google's own Tensor chips, with general pkvm support and the best software updates.           
+With the latest GrapheneOS, android 16, Terminal app can even have display output in vm.      
 # For MTK GenieZone:
 - Device: Oneplus Ace 5 ultra, MTK Dimensity 9400+
 
@@ -65,6 +65,11 @@ Anyway, running a full mainline Linux kernel on my Android device is exciting. I
     --block debian.img,root \
     vmlinuz
 ```
+### note:
+- MTK's GenieZone does not have qemu support.
+- 512M swiotlb is required to avoid vm crash when writing large files to disk.
+- If you lower the swiotlb to 64M(default value), good luck to you. On my device, disk I/O will be very unstable.
+
 # For Snapdragon Gunyah:
 - Device: Lenovo Y700 Gen 4, Snapdragon 8 Elite
 
@@ -75,6 +80,11 @@ Anyway, running a full mainline Linux kernel on my Android device is exciting. I
    --net tap-name=crosvm_tap --shared-dir /sdcard/shared:shared:type=fs \
    --block root_part,root,async-executor=epoll,sparse=false,packed-queue=true,multiple-workers=true,direct,block-size=4096 --async-executor epoll  /data/local/tmp/kernel
 ```
+### note:
+- You might got better experience with qemu, but I didn't test it.
+- swiotlb is max to 256M on my device, or it will cause device crash and reboot.
+- It's the most unstanble one among the three if you use original crosvm on your device.
+- Try [DroidVM](https://github.com/Droid-VM/DroidVM), seems they are working for Snapdragon gunyah, and did many hacks to make it work.
 
 # The swiotlb galgame:
 Seems the I/O syncing logic of crosvm is very stupid. If you write some large files to disk, like `cp /dev/zero ./test`, Explosion! Your vm crashes.      
@@ -101,7 +111,10 @@ I also tried to compile the latest crosvm, minijail is a superhell, it cannot be
 ## See also:
 https://github.com/polygraphene/gunyah-on-sd-guide/issues/14      
 I have also wrote about the disk I/O problem here.         
-If you have any idea about this, please let me know.      
+## Solution:
+- Set 256M swiotlb with low memory like 2048M, and pray.
+- Wait for official fix for your rom.
+- Try DroidVM or maybe QEMU.
 
 
 # See also:
