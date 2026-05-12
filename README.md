@@ -3,11 +3,11 @@
 > WIP Document
 
 >[!WARNING]
-> This document is last edited on May 2026, with android 16 environment. So, some information in this document might be outdated.
+> This document is last edited on May 2026, based on android 16. So, some information in this document might be outdated.
 >
-> Seems the virsion of crosvm is always 0.1.0, so I used crosvm in com.android.virt on my device to write this doc.
+> Seems the version of crosvm is always 0.1.0, so I used crosvm in com.android.virt on my device to write this doc. Firmware/crosvm version can make many issues unreproducible, you have to test the things yourself.
 >
-> I'm not a professional developer, be careful of wrong information, and feel free to correct me or make a pull request.
+> I'm not a vm/hw developer, be careful of wrong information, and feel free to correct me or make a pull request.
 
 
 >[!WARNING]
@@ -27,7 +27,7 @@ This is a note contains some info of running virtual machines on Android devices
 - For Snapdragon devices, /dev/gunyah should exist.
 - For MTK devices, /dev/gzvm should exist.
 - For pixel 6/6 Pro, you might need to enable pkvm in fastboot.
-- For other devices like Exynos, /dev/kvm should exist.
+- For other devices, /dev/kvm should exist.
 
 # Background:
 AVF (Android Virtualization Framework) is a new feature introduced in Android 14, which allows users to run virtual machines on their Android devices.
@@ -50,8 +50,9 @@ Anyway, running a full mainline Linux kernel on my Android device is exciting. I
         --block fedora.img,root vmlinux
 ```
 ### note:
-You'll definitely have the best experience on Google's own Tensor chips, with general pkvm support and always up-to-date firmware maintenance.           
+You'll have the best experience on Google's own Tensor chips, with general pkvm support and always up-to-date firmware maintenance.           
 With the latest GrapheneOS, android 16, official Terminal app can even have display output in vm.      
+As AVF/crosvm is developed by Google, it will be more stable and better optimized on Tensor chips.       
 # For MTK GenieZone:
 - Device: Oneplus Ace 5 ultra, MTK Dimensity 9400+
 - Android 16
@@ -87,17 +88,17 @@ With the latest GrapheneOS, android 16, official Terminal app can even have disp
    --block root_part,root,async-executor=epoll,sparse=false,packed-queue=true,multiple-workers=true,direct,block-size=4096 --async-executor epoll  /data/local/tmp/kernel
 ```
 ### note:
-- You might got better experience with qemu, but I didn't test it.
+- You might get better experience with qemu, but I didn't test it.
 - swiotlb is max to 256M on my device, or it will cause device crash and reboot.
 - It's the most unstable one among the three when using original /apex/com.android.virt/bin/crosvm on my device.
 - You can try [DroidVM](https://github.com/Droid-VM/DroidVM), seems they are working for Snapdragon gunyah, and did many hacks to make it work.
 
 # Networking Magic:
-## For wifi devices:
+## For wifi networks:
 Just see [gunyah-on-sd-guide](https://github.com/polygraphene/gunyah-on-sd-guide), in Networking section, you can find the instructions to set up tap interface for your vm.       
-## For mobile data devices:
+## For mobile data:
 I really remember that I have seen a tutorial about that, using gvisor-tap-vsock. [This article](https://temofeev.ru/info/articles/zapusk-linux-na-ustroystvakh-android-bez-podderzhki-avf/) also mentioned that, but I cannot find it now.      
-I have write a simple script for it before, so based on that script:
+I have write a simple script for it before, just as proof-of-concept, so based on that script:
 ```sh
 ifname=crosvm_tap
 if [ ! -d /sys/class/net/$ifname ]; then
@@ -122,7 +123,7 @@ gvproxy -listen vsock://:1024 -listen unix://$(pwd)/../network.sock &
 sleep 2
 curl --unix-socket /data/data/com.termux/files/home/network.sock http:/unix/services/forwarder/expose -X POST -d '{"local":":22","remote":"192.168.127.2:22"}'
 ```
-Remember to add `--vsock 3` in crosvm start-up cmdline. And then, in vm:
+Remember to add `--vsock 3` and `--net tap-name=crosvm_tap` in crosvm start-up cmdline. And then, in vm:
 ```sh
 apt install -y netplan.io
 cat <<EOF > /etc/netplan/90-default.yaml
@@ -165,14 +166,12 @@ sleep 2
 ip route add default via 192.168.127.1
 ```
 ### note:
-- Remember to add `--net tap-name=crosvm_tap` in crosvm start-up cmdline.
 - Compile gvisor-tap-vsock yourself, and also copy it to your vm.
-- I should apologize that I really cannot find the original tutorial, If you have it, please let me know, I will add the link here.
+- I should apologize that I really cannot find the original tutorial, If you have it, please let me know.
 
 
 # The Swiotlb GalGame:
-Seems the I/O syncing logic of crosvm is very stupid. If you write some large files to disk, like `cp /dev/zero ./test`, Explosion! Your vm crashes.      
-
+Seems the I/O syncing logic of crosvm is crazy. If you write some large files to disk, like `cp /dev/zero ./test`, Explosion! Your vm crashes.      
 
 On my device with MTK Dimensity 9400+, I can set swiotlb to 512M to mitigate the issue. But on Snapdragon 8 Elite, it will make my device crash and reboot.      
 
@@ -181,15 +180,12 @@ On my device with MTK Dimensity 9400+, I can set swiotlb to 512M to mitigate the
 
 So, as the kernel always says "yakimochi..." (jealousy) when running vm, seems swiotlb is max to 256M on Snapdragon 8 Elite. But with such a low swiotlb, vm will crash when writing large files. So I can only try to write some magic spells for the start-up commands, like a mahou shoujo :<       
 
-
 `--unmap-guest-memory-on-fork` will protect the host from crashing, but vm cannot avoid crashing with 512M swiotlb or when writing large files. And, this feature will cause guest immediate crash when mounting shared directory with virtiofs.      
-
 
 And, even with 256M large swiotlb and only 2048M memory, disk I/O in vm is unstable after my device has 21 hours uptime. 1024M is also sometimes unstable now, seems 512M is okey, test it yourself.     
 > "Everything is I/O on Linux, when I/O's unstable, everything is cooked..."
 
 In one word, it's okey for a testing environment, but you'd better do not use it to deploy a service.     
-
 
 I also tried to compile the latest crosvm, minijail is a superhell, it cannot be linked properly in termux. I tried to just disable all default features and compile only the core, crosvm works, but all the problem still exists as before.      
 ### See also:
@@ -203,13 +199,16 @@ I have also wrote about the disk I/O problem here.
 - Try DroidVM, or maybe QEMU.
 
 Or if you have any idea, please let me know.
+
 # The Performance Cosplay:
 In the vm, you'll see crazy disk I/O speed high to Gbps level, every block is hanging in cache, waiting to just have a savage oom.          
 You'll also see very low pipe-based context switch speed.        
 So don't be surprised if you see the weird performance in vm, it's just like a cosplay.        
 
 If you have any idea of this, please let me know.
-
+# About the author:
+- Moe-hacker in RuriOSS     
+- "Devices Have Limits, But Tech Doesn't".
 # See also:
 - https://github.com/Droid-VM/DroidVM
 - https://github.com/polygraphene/gunyah-on-sd-guide
