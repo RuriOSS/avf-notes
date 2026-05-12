@@ -38,6 +38,13 @@ But, AVF used a new virtualization backend written in rust, the crosvm. Rust is 
 
 Anyway, running a full mainline Linux kernel on my Android device is exciting. I scream for it, so let's have a Waku Waku adventure!           
 # Mounting rootfs:
+Loop mounting an image is the most common way to edit/prepare rootfs for vm, like:
+```sh
+mkdir rootfs
+LOOP_DEV=$(losetup -f)
+losetup $LOOP_DEV root_part
+mount $LOOP_DEV ./rootfs
+```
 On some devices, loop mounting an image is banned by SELinux, for example Oneplus Ace 5 Ultra.       
 If you cannot loop-mount your rootfs properly, try `setenforce 0`(Dangerous!!! Do it if you really know what you're doing), try editing SELinux policies, try to make rootfs on another device, or try to migrate tarball from erofs in vm.      
 # Tensor pkvm:
