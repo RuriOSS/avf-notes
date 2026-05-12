@@ -4,6 +4,10 @@
 >[!WARNING]
 > This document is last edited on May 2026, based on android 16. Some information in this document might be outdated.
 >
+> Anytime before you put any important data in your vm, make sure you have a backup; anytime before you deploy any important service on it, make sure to at least do the stress test for a while.       
+>
+> AVF is still in early stage, and there are many things that can cause data loss or device crash. So, please be careful when using it.
+>
 > Seems the version of crosvm is always 0.1.0, so I used crosvm in com.android.virt on my device to write this doc. 
 >
 > Different firmware/crosvm version can make many issues unreproducible, you have to test the things yourself.
@@ -12,10 +16,6 @@
 
 
 >[!WARNING]
-> Anytime before you put any important data in your vm, make sure you have a backup; anytime before you deploy any important service on it, make sure to at least do the stress test for a while.       
->
-> AVF is still in early stage, and there are many things that can cause data loss or device crash. So, please be careful when using it.
->
 > Be aware of your mental health.       
 > Patience is key in life.       
 > > "Tons of vm Guest/Host panic is just like a sex play"
@@ -234,7 +234,7 @@ Based on my experience, the more cpu cores you give to vm, the more unstable it 
 Most of the time, 4 cores is the best choice, and 8 cores will randomly cause vm crash.        
 It can be different on your device, so test it yourself.      
 # Performance Cosplay:
-In the vm, you'll see crazy disk I/O speed high to Gbps level, every block is hanging in cache, waiting to just have a savage oom.          
+In the vm, you'll see crazy disk I/O speed, can be high to Gbps level, every block is hanging in cache, waiting to just have a savage oom.          
 You'll also see very low pipe-based context switch speed.        
 So don't be surprised if you see the weird performance in vm, it's just a cosplay.        
 
