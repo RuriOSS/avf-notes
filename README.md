@@ -18,6 +18,7 @@
 > > "Tons of vm Guest/Host panic is just like a sex play"
 # Introduction:
 This is a note contains some info of running virtual machines on Android devices with AVF. Just some notes based on my experience, and I hope it can be helpful for you.         
+And, please read [gunyah-on-sd-guide](https://github.com/polygraphene/gunyah-on-sd-guide) before you start, It contains many useful information.          
 # Requirements:
 - Rooted Android device
 - Has pvmfw partition
@@ -34,7 +35,7 @@ But, AVF used a new virtualization backend written in rust, the crosvm. Rust is 
 
 
 Anyway, running a full mainline Linux kernel on my Android device is exciting. I scream for it, so let's have a Waku Waku adventure!            
-# For Tensor pkvm:
+# Tensor pkvm:
 - Device: Pixel 7a, Tensor G2
 - Android 16
 ### Start-up command:
@@ -51,7 +52,7 @@ Anyway, running a full mainline Linux kernel on my Android device is exciting. I
 You'll have the best experience on Google's own Tensor chips, with general pkvm support and always up-to-date firmware maintenance.           
 With the latest GrapheneOS, android 16, official Terminal app can even have display output in vm.      
 As AVF/crosvm is developed by Google, it will be more stable and better optimized on Tensor chips.       
-# For MTK GenieZone:
+# MTK GenieZone:
 - Device: Oneplus Ace 5 ultra, MTK Dimensity 9400+
 - Android 16
 ### Start-up command:
@@ -75,7 +76,7 @@ As AVF/crosvm is developed by Google, it will be more stable and better optimize
 - 512M swiotlb is required to avoid vm crash when writing large files to disk.
 - If you lower the swiotlb to 64M (default value), good luck to you. On my device, disk I/O will be very unstable.
 
-# For Snapdragon Gunyah:
+# Snapdragon Gunyah:
 - Device: Lenovo Y700 Gen 4, Snapdragon 8 Elite
 ### Start-up command:
 ```sh
@@ -170,7 +171,7 @@ ip route add default via 192.168.127.1
 - I should apologize that I really cannot find the original tutorial, If you have it, please let me know.
 
 
-# The Swiotlb GalGame:
+# Swiotlb GalGame:
 Seems the I/O syncing logic of crosvm is crazy. If you write some large files to disk, like `cp /dev/zero ./test`, Explosion! Your vm crashes.      
 
 On my device with MTK Dimensity 9400+, I can set swiotlb to 512M to mitigate the issue. But on Snapdragon 8 Elite, it will make my device crash and reboot.      
@@ -200,7 +201,7 @@ I have also wrote about the disk I/O problem here.
 
 Or if you have any idea, please let me know.
 
-# The Performance Cosplay:
+# Performance Cosplay:
 In the vm, you'll see crazy disk I/O speed high to Gbps level, every block is hanging in cache, waiting to just have a savage oom.          
 You'll also see very low pipe-based context switch speed.        
 So don't be surprised if you see the weird performance in vm, it's just like a cosplay.        
