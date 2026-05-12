@@ -36,8 +36,7 @@ And, please read [gunyah-on-sd-guide](https://github.com/polygraphene/gunyah-on-
 # Background:
 AVF (Android Virtualization Framework) is a new feature introduced in Android 14, which allows users to run virtual machines on their Android devices.
 
-But, AVF used a new virtualization backend written in rust, the crosvm. Rust is not a silver bullet. As we know, language-level memory safety does not equal to hardware-level memory safety, even not logical-level memory safety. So at least based on my experience, it's not a production-ready feature.       
-
+But, AVF used a new virtualization backend written in rust, the crosvm. Rust is not a silver bullet. As we know, language-level memory safety does not equal to hardware-level memory safety, even not logical-level safety. So at least based on my experience, it's not a production-ready feature.       
 
 Anyway, running a full mainline Linux kernel on my Android device is exciting. I scream for it, so let's have a Waku Waku adventure!           
 # Mounting rootfs:
@@ -49,7 +48,7 @@ losetup $LOOP_DEV root_part
 mount $LOOP_DEV ./rootfs
 ```
 On some devices, loop mounting an image is banned by SELinux, for example Oneplus Ace 5 Ultra.       
-If you cannot loop-mount your rootfs properly, try `setenforce 0`(Dangerous!!! Do it if you really know what you're doing), try editing SELinux policies, try to make rootfs on another device, or try to migrate tarball from erofs in vm.      
+If you cannot loop-mount your rootfs properly, try editing SELinux policies, try `setenforce 0`(Dangerous!!! Do it if you really know what you're doing), try to make rootfs on another device, or try to migrate a tarball from erofs in vm.      
 # Tensor pkvm:
 - Pixel 7a
 - Tensor G2
