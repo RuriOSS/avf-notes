@@ -233,7 +233,7 @@ So don't be surprised if you see the weird performance in vm, it's just a cospla
 
 If you have any idea to improve this issue, please let me know.
 # About the author:
-- Moe-hacker in RuriOSS     
+- [Moe Hakozaki](https://github.com/Moe-hacker) in [RuriOSS](https://github.com/RuriOSS)    
 
 "Devices Have Limits, But Tech Doesn't"
 # See also:
