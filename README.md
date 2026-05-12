@@ -9,11 +9,12 @@
 
 
 >[!WARNING]
-> AVF vm is a good toy, just a toy. Anytime before you put any important data in it, make sure you have a backup; anytime before you deploy any important service on it, make sure to at least do the stress test for a while. 
+> AVF vm is a good toy, just a toy. Anytime before you put any important data in it, make sure you have a backup; anytime before you deploy any important service on it, make sure to at least do the stress test for a while.       
+>
 > AVF vm is still in early stage, and there are many things that can cause data loss or device crash. So, please be careful when using it.
 >
-> Be aware of your mental health. 
-> Patience is key in life. 
+> Be aware of your mental health.       
+> Patience is key in life.       
 > > "Tons of vm Guest/Host panic is just like a sex play"
 
 # Requirements:
@@ -46,7 +47,7 @@ Anyway, running a full mainline Linux kernel on my Android device is exciting. I
 ```
 ### note:
 You'll definitely have the best experience on Google's own Tensor chips, with general pkvm support and the best software updates.           
-With the latest GrapheneOS, android 16, Terminal app can even have display output in vm.      
+With the latest GrapheneOS, android 16, official Terminal app can even have display output in vm.      
 # For MTK GenieZone:
 - Device: Oneplus Ace 5 ultra, MTK Dimensity 9400+
 
@@ -90,7 +91,7 @@ With the latest GrapheneOS, android 16, Terminal app can even have display outpu
 Seems the I/O syncing logic of crosvm is very stupid. If you write some large files to disk, like `cp /dev/zero ./test`, Explosion! Your vm crashes.      
 
 
-On my device with MTK Dimensity 9400+, I can set swiotlb to 512 to mitigate the issue. But on Snapdragon 8 Elite, it will make my device crash and reboot.      
+On my device with MTK Dimensity 9400+, I can set swiotlb to 512M to mitigate the issue. But on Snapdragon 8 Elite, it will make my device crash and reboot.      
 
 
 > The kernel panic message on Qualcomm crashdump page is like the blazing crimson eyes of a yandere girlfriend, her voice low and chilling as she demands: "Darling...why? Why did you give her so many resources? I'm the only one who's perfect for you... I should be your one and only...exclusively..."      
@@ -112,10 +113,11 @@ I also tried to compile the latest crosvm, minijail is a superhell, it cannot be
 https://github.com/polygraphene/gunyah-on-sd-guide/issues/14      
 I have also wrote about the disk I/O problem here.         
 ## Solution:
+- Set 512M swiotlb, if you use MTK device.
+- Switch to Pixel with Tensor, and get the latest firmware.
 - Set 256M swiotlb with low memory like 2048M, and pray.
-- Wait for official fix for your rom.
+- Wait for official fix for your device.
 - Try DroidVM, or maybe QEMU.
-
 
 # See also:
 - https://github.com/Droid-VM/DroidVM
