@@ -114,7 +114,7 @@ I have also wrote about the disk I/O problem here.
 ## Solution:
 - Set 256M swiotlb with low memory like 2048M, and pray.
 - Wait for official fix for your rom.
-- Try DroidVM or maybe QEMU.
+- Try DroidVM, or maybe QEMU.
 
 
 # See also:
