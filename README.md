@@ -1,4 +1,5 @@
 # Warning:
+"Ask why crosvm is always cooking me before you wonder my non-rigorous expressions."
 
 >[!WARNING]
 > This document is last edited on May 2026, based on android 16. Some information in this document might be outdated.
