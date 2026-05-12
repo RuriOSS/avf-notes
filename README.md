@@ -92,7 +92,85 @@ With the latest GrapheneOS, android 16, official Terminal app can even have disp
 - It's the most unstanble one among the three if you use original crosvm on your device.
 - Try [DroidVM](https://github.com/Droid-VM/DroidVM), seems they are working for Snapdragon gunyah, and did many hacks to make it work.
 
-# The swiotlb GalGame:
+# Networking Magic:
+## For wifi devices:
+Just see [gunyah-on-sd-guide](https://github.com/polygraphene/gunyah-on-sd-guide), in Networking section, you can find the instructions to set up tap interface for your vm.       
+## For mobile data devices:
+I really remember that I have seen a tutorial about that, using gvisor-tap-vsock. [This article](https://temofeev.ru/info/articles/zapusk-linux-na-ustroystvakh-android-bez-podderzhki-avf/) also mentioned that, but I cannot find it now.      
+I have write a simple script for it before, so based on that script:
+```sh
+  ifname=crosvm_tap
+  if [ ! -d /sys/class/net/$ifname ]; then
+    # https://crosvm.dev/book/devices/net.html
+    ip tuntap add mode tap user root vnet_hdr crosvm_tap
+    ip addr add 192.168.10.1/24 dev crosvm_tap
+    ip link set crosvm_tap up
+
+    # routing
+    sysctl net.ipv4.ip_forward=1
+    HOST_DEV=$(ip route get 8.8.8.8 | awk -- '{printf $5}')
+    iptables -t nat -A POSTROUTING -o "${HOST_DEV}" -j MASQUERADE
+    iptables -A FORWARD -i "${HOST_DEV}" -o crosvm_tap -m state --state RELATED,ESTABLISHED -j ACCEPT
+    iptables -A FORWARD -i crosvm_tap -o "${HOST_DEV}" -j ACCEPT
+
+    # the main route table needs to be added
+    ip rule add from all lookup main pref 1
+  fi
+  rm ../network.sock
+  killall -9 gvproxy
+  gvproxy -listen vsock://:1024 -listen unix://$(pwd)/../network.sock &
+  sleep 2
+  curl --unix-socket /data/data/com.termux/files/home/network.sock http:/unix/services/forwarder/expose -X POST -d '{"local":":22","remote":"192.168.127.2:22"}'
+```
+Remember to add `--vsock 3` in crosvm start-up cmdline. And then, in vm:
+```sh
+apt install -y netplan.io
+cat <<EOF > /etc/netplan/90-default.yaml
+network:
+    version: 2
+    ethernets:
+all-en:
+    match:
+name: en*
+    dhcp4: false
+
+    addresses:
+      - 192.168.10.2/24
+    routes:
+      - to: default
+via: 192.168.10.1
+    nameservers:
+  addresses: [8.8.8.8]
+    dhcp6: true
+    dhcp6-overrides:
+use-domains: true
+all-eth:
+    match:
+name: eth*
+    dhcp4: true
+    dhcp4-overrides:
+use-domains: true
+    dhcp6: true
+    dhcp6-overrides:
+use-domains: true
+EOF
+```
+Then:
+```sh
+ip route del default
+ip addr add 192.168.10.2/24 dev enp0s2
+ip link set enp0s2 up
+gvforwarder >/dev/null 2>&1 &
+sleep 2
+ip route add default via 192.168.127.1
+```
+### note:
+- Remember to add `--net tap-name=crosvm_tap` in crosvm start-up cmdline.
+- Compile gvisor-tap-vsock yourself, and also copy it to your vm.
+- I should apologize that I really cannot find the original tutorial, If you have it, please let me know, I will add the link here.
+
+
+# The Swiotlb GalGame:
 Seems the I/O syncing logic of crosvm is very stupid. If you write some large files to disk, like `cp /dev/zero ./test`, Explosion! Your vm crashes.      
 
 
@@ -108,7 +186,7 @@ So, as the kernel always says "yakimochi..." (jealousy) when running vm, seems s
 
 
 And, even with 256M large swiotlb and only 2048M memory, disk I/O in vm is unstable after my device has 21 hours uptime. 1024M is also sometimes unstable now, seems 512M is okey, test it yourself.     
->"Everything is I/O on Linux, when I/O's unstable, everything is cooked..."
+> "Everything is I/O on Linux, when I/O's unstable, everything is cooked..."
 
 In one word, it's okey for a testing environment, but you'd better do not use it to deploy a service.     
 
@@ -131,6 +209,7 @@ You'll also see very low pipe-based context switch speed.
 So don't be surprised if you see the weird performance in vm, it's just like a cosplay.        
 
 If you have any idea of this, please let me know.
+
 # See also:
 - https://github.com/Droid-VM/DroidVM
 - https://github.com/polygraphene/gunyah-on-sd-guide
