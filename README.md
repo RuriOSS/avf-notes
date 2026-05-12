@@ -53,6 +53,8 @@ If you cannot loop-mount your rootfs properly, try `setenforce 0`(Dangerous!!! D
 - Android 16
 ### Start-up command:
 ```sh
+ulimit -l unlimited
+unset LD_PRELOAD
 /apex/com.android.virt/bin/crosvm run \
         --gpu-backend=virglrenderer \
         --disable-sandbox --swiotlb 64 \
@@ -71,6 +73,8 @@ With the latest GrapheneOS, android 16, official Terminal app can even have disp
 - Android 16
 ### Start-up command:
 ```sh
+ulimit -l unlimited
+unset LD_PRELOAD
 /apex/com.android.virt/bin/crosvm run \
     --disable-sandbox \
     --protected-vm-without-firmware \
@@ -96,6 +100,8 @@ With the latest GrapheneOS, android 16, official Terminal app can even have disp
 - Android 16
 ### Start-up command:
 ```sh
+ulimit -l unlimited
+unset LD_PRELOAD
 /apex/com.android.virt/bin/crosvm --log-level debug run \
    --disable-sandbox --no-balloon --protected-vm-without-firmware \
    --swiotlb 256 --socket vm.socket \
