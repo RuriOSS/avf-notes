@@ -18,6 +18,7 @@
 > Be aware of your mental health.       
 > Patience is key in life.       
 > > "Tons of vm Guest/Host panic is just like a sex play"
+> >
 > > "Trust that, If you never expect, nothing is unexpected. If nothing's unexpected, there's no bugs"
 
 # Introduction:
