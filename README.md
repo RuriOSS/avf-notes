@@ -225,7 +225,10 @@ Or if you have any idea, please let me know.
 ### See also:
 https://github.com/polygraphene/gunyah-on-sd-guide/issues/14      
 I have also wrote about the disk I/O problem here.   
-
+# CPU Core Stats:
+Based on my experience, the more cpu cores you give to vm, the more unstable it will be.       
+Most of the time, 4 cores is the best choice, and 8 cores will randomly cause vm crash.        
+It can be different on your device, so test it yourself.      
 # Performance Cosplay:
 In the vm, you'll see crazy disk I/O speed high to Gbps level, every block is hanging in cache, waiting to just have a savage oom.          
 You'll also see very low pipe-based context switch speed.        
