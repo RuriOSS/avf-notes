@@ -18,6 +18,8 @@
 > Be aware of your mental health.       
 > Patience is key in life.       
 > > "Tons of vm Guest/Host panic is just like a sex play"
+> > "Trust that, If you never expect, nothing is unexpected. If nothing's unexpected, there's no bugs"
+
 # Introduction:
 This is a note contains some info of running virtual machines on Android devices with AVF. Just some notes based on my experience, and I hope it can be helpful for you.         
 And, please read [gunyah-on-sd-guide](https://github.com/polygraphene/gunyah-on-sd-guide) before you start, It contains many useful information.          
@@ -66,7 +68,8 @@ unset LD_PRELOAD
 ### note:
 You'll have the best experience on Tensor chips, with general pkvm support and always up-to-date firmware maintenance.         
 As AVF/crosvm is developed by Google, it will be more stable and better optimized.         
-With the latest GrapheneOS, android 16, official Terminal app can even have display output in vm.      
+
+On latest GrapheneOS (android 16) official Terminal app even has display output in vm. You'll have a good future If you chose Pixel to play with AVF. So just enjoy.       
 # MTK GenieZone:
 - Oneplus Ace 5 ultra
 - MTK Dimensity 9400+
@@ -195,7 +198,7 @@ ip route add default via 192.168.127.1
 
 # Swiotlb GalGame:
 >[!WARNING]
->Based on my experience on Android 16, May 12 2026. Be aware of outdated information or device/firmware differences.
+> This is only based on my experience, on Android 16, May 12 2026. Be aware of outdated information or device/firmware differences.
 
 Seems the I/O syncing logic of crosvm is crazy. If you write some large files to disk, like `cp /dev/zero ./test`, Explosion! Your vm crashes.      
 
