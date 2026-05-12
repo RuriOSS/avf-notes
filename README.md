@@ -1,40 +1,43 @@
-# WIP DOCUMENT:
->[!WARNING]
-> WIP
 # Warning:
 >[!WARNING]
+> WIP Document
+>[!WARNING]
 > This document is last edited on May 2026, with android 16 environment. So, some information in this document might be outdated.
+>
+> Seems the virsion of crosvm is always 0.1.0, so I used crosvm in com.android.virt on my device to write this doc.
 >
 > I'm not a professional developer, be careful of wrong information, and feel free to correct me or make a pull request.
 
 
 >[!WARNING]
-> AVF vm is a good toy, just a toy. Anytime before you put any important data in it, make sure you have a backup; anytime before you deploy any important service on it, make sure to at least do the stress test for a while.       
+> Anytime before you put any important data in your vm, make sure you have a backup; anytime before you deploy any important service on it, make sure to at least do the stress test for a while.       
 >
-> AVF vm is still in early stage, and there are many things that can cause data loss or device crash. So, please be careful when using it.
+> AVF is still in early stage, and there are many things that can cause data loss or device crash. So, please be careful when using it.
 >
 > Be aware of your mental health.       
 > Patience is key in life.       
 > > "Tons of vm Guest/Host panic is just like a sex play"
-
+# Introduction:
+This is a note contains some info of running virtual machines on Android devices with AVF. Just some notes based on my experience, and I hope it can be helpful for you.         
 # Requirements:
 - Rooted Android device
 - Has pvmfw partition
-- For some devices like Snapdragon 8 Gen 2, you might need to port pvmfw firmware yourself. It might be a long night, get some coffee and good music, and enjoy.
+- For some devices like Snapdragon 8 Gen 2, you might need to port pvmfw firmware yourself.
 - For Snapdragon devices, /dev/gunyah should exist.
 - For MTK devices, /dev/gzvm should exist.
 - For pixel 6/6 Pro, you might need to enable pkvm in fastboot.
 - For other devices like Exynos, /dev/kvm should exist.
 
-# Introduction:
+# Background:
 AVF (Android Virtualization Framework) is a new feature introduced in Android 14, which allows users to run virtual machines on their Android devices.
 
-But, AVF is not qemu-friendly, in fact, it's even crosvm-only for MediaTek devices now. Rust is not a silver bullet. As we know, language-level memory safety does not equal to hardware-level memory safety, even not logical-level memory safety. So, at least based on my experience, it's not a production-ready feature.       
+But, AVF used a new virtualization backend written in rust, the crosvm. Rust is not a silver bullet. As we know, language-level memory safety does not equal to hardware-level memory safety, even not logical-level memory safety. So, at least based on my experience, it's not a production-ready feature.       
 
 
 Anyway, running a full mainline Linux kernel on my Android device is exciting. I scream for it, so let's have a Waku Waku adventure!            
 # For Tensor pkvm:
 - Device: Pixel 7a, Tensor G2
+- Android 16
 
 ```sh
 /apex/com.android.virt/bin/crosvm run \
@@ -46,10 +49,11 @@ Anyway, running a full mainline Linux kernel on my Android device is exciting. I
         --block fedora.img,root vmlinux
 ```
 ### note:
-You'll definitely have the best experience on Google's own Tensor chips, with general pkvm support and the best software updates.           
+You'll definitely have the best experience on Google's own Tensor chips, with general pkvm support and always up-to-date firmware maintenance.           
 With the latest GrapheneOS, android 16, official Terminal app can even have display output in vm.      
 # For MTK GenieZone:
 - Device: Oneplus Ace 5 ultra, MTK Dimensity 9400+
+- Android 16
 
 ```sh
 /apex/com.android.virt/bin/crosvm run \
@@ -69,7 +73,7 @@ With the latest GrapheneOS, android 16, official Terminal app can even have disp
 ### note:
 - MTK's GenieZone does not have qemu support.
 - 512M swiotlb is required to avoid vm crash when writing large files to disk.
-- If you lower the swiotlb to 64M(default value), good luck to you. On my device, disk I/O will be very unstable.
+- If you lower the swiotlb to 64M (default value), good luck to you. On my device, disk I/O will be very unstable.
 
 # For Snapdragon Gunyah:
 - Device: Lenovo Y700 Gen 4, Snapdragon 8 Elite
@@ -87,7 +91,7 @@ With the latest GrapheneOS, android 16, official Terminal app can even have disp
 - It's the most unstanble one among the three if you use original crosvm on your device.
 - Try [DroidVM](https://github.com/Droid-VM/DroidVM), seems they are working for Snapdragon gunyah, and did many hacks to make it work.
 
-# The swiotlb galgame:
+# The swiotlb GalGame:
 Seems the I/O syncing logic of crosvm is very stupid. If you write some large files to disk, like `cp /dev/zero ./test`, Explosion! Your vm crashes.      
 
 
@@ -109,16 +113,23 @@ In one word, it's okey for a testing environment, but you'd better do not use it
 
 
 I also tried to compile the latest crosvm, minijail is a superhell, it cannot be linked properly in termux. I tried to just disable all default features and compile only the core, crosvm works, but all the problem still exists as before.      
-## See also:
+### See also:
 https://github.com/polygraphene/gunyah-on-sd-guide/issues/14      
 I have also wrote about the disk I/O problem here.         
-## Solution:
+### Possible solutions:
 - Set 512M swiotlb, if you use MTK device.
 - Switch to Pixel with Tensor, and get the latest firmware.
 - Set 256M swiotlb with low memory like 2048M, and pray.
 - Wait for official fix for your device.
 - Try DroidVM, or maybe QEMU.
 
+Or if you have any idea, please let me know.
+# The Performance Cosplay:
+In the vm, you'll see crazy disk I/O speed high to Gbps level, every block is hanging in cache, waiting to just have a savage oom.          
+You'll also see very low pipe-based context switch speed.        
+So don't be surprised if you see the weird performance in vm, it's just like a cosplay.        
+
+If you have any idea of this, please let me know.
 # See also:
 - https://github.com/Droid-VM/DroidVM
 - https://github.com/polygraphene/gunyah-on-sd-guide
