@@ -8,12 +8,11 @@
 >
 > AVF is still in early stage, and there are many things that can cause data loss or device crash. So, please be careful when using it.
 >
-> Seems the version of crosvm is always 0.1.0, so I used crosvm in com.android.virt on my device to write this doc. 
+> Seems the version of crosvm is always 0.1.0, this doc is based on crosvm binary in official com.android.virt on my device.   
 >
 > Different firmware/crosvm version can make many issues unreproducible, you have to test the things yourself.
 >
 > I'm not a vm/hw developer, be careful of wrong information, and feel free to correct me or make a pull request.
-
 
 >[!WARNING]
 > Be aware of your mental health.       
