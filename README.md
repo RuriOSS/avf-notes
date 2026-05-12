@@ -72,7 +72,7 @@ With the latest GrapheneOS, android 16, official Terminal app can even have disp
     vmlinuz
 ```
 ### note:
-- MTK's GenieZone does not have qemu support.
+- MTK GenieZone does not have qemu support.
 - 512M swiotlb is required to avoid vm crash when writing large files to disk.
 - If you lower the swiotlb to 64M (default value), good luck to you. On my device, disk I/O will be very unstable.
 
@@ -89,8 +89,8 @@ With the latest GrapheneOS, android 16, official Terminal app can even have disp
 ### note:
 - You might got better experience with qemu, but I didn't test it.
 - swiotlb is max to 256M on my device, or it will cause device crash and reboot.
-- It's the most unstanble one among the three if you use original crosvm on your device.
-- Try [DroidVM](https://github.com/Droid-VM/DroidVM), seems they are working for Snapdragon gunyah, and did many hacks to make it work.
+- It's the most unstable one among the three when using original /apex/com.android.virt/bin/crosvm on my device.
+- You can try [DroidVM](https://github.com/Droid-VM/DroidVM), seems they are working for Snapdragon gunyah, and did many hacks to make it work.
 
 # Networking Magic:
 ## For wifi devices:
@@ -99,28 +99,28 @@ Just see [gunyah-on-sd-guide](https://github.com/polygraphene/gunyah-on-sd-guide
 I really remember that I have seen a tutorial about that, using gvisor-tap-vsock. [This article](https://temofeev.ru/info/articles/zapusk-linux-na-ustroystvakh-android-bez-podderzhki-avf/) also mentioned that, but I cannot find it now.      
 I have write a simple script for it before, so based on that script:
 ```sh
-  ifname=crosvm_tap
-  if [ ! -d /sys/class/net/$ifname ]; then
-    # https://crosvm.dev/book/devices/net.html
-    ip tuntap add mode tap user root vnet_hdr crosvm_tap
-    ip addr add 192.168.10.1/24 dev crosvm_tap
-    ip link set crosvm_tap up
+ifname=crosvm_tap
+if [ ! -d /sys/class/net/$ifname ]; then
+  # https://crosvm.dev/book/devices/net.html
+  ip tuntap add mode tap user root vnet_hdr crosvm_tap
+  ip addr add 192.168.10.1/24 dev crosvm_tap
+  ip link set crosvm_tap up
 
-    # routing
-    sysctl net.ipv4.ip_forward=1
-    HOST_DEV=$(ip route get 8.8.8.8 | awk -- '{printf $5}')
-    iptables -t nat -A POSTROUTING -o "${HOST_DEV}" -j MASQUERADE
-    iptables -A FORWARD -i "${HOST_DEV}" -o crosvm_tap -m state --state RELATED,ESTABLISHED -j ACCEPT
-    iptables -A FORWARD -i crosvm_tap -o "${HOST_DEV}" -j ACCEPT
+  # routing
+  sysctl net.ipv4.ip_forward=1
+  HOST_DEV=$(ip route get 8.8.8.8 | awk -- '{printf $5}')
+  iptables -t nat -A POSTROUTING -o "${HOST_DEV}" -j MASQUERADE
+  iptables -A FORWARD -i "${HOST_DEV}" -o crosvm_tap -m state --state RELATED,ESTABLISHED -j ACCEPT
+  iptables -A FORWARD -i crosvm_tap -o "${HOST_DEV}" -j ACCEPT
 
-    # the main route table needs to be added
-    ip rule add from all lookup main pref 1
-  fi
-  rm ../network.sock
-  killall -9 gvproxy
-  gvproxy -listen vsock://:1024 -listen unix://$(pwd)/../network.sock &
-  sleep 2
-  curl --unix-socket /data/data/com.termux/files/home/network.sock http:/unix/services/forwarder/expose -X POST -d '{"local":":22","remote":"192.168.127.2:22"}'
+  # the main route table needs to be added
+  ip rule add from all lookup main pref 1
+fi
+rm ../network.sock
+killall -9 gvproxy
+gvproxy -listen vsock://:1024 -listen unix://$(pwd)/../network.sock &
+sleep 2
+curl --unix-socket /data/data/com.termux/files/home/network.sock http:/unix/services/forwarder/expose -X POST -d '{"local":":22","remote":"192.168.127.2:22"}'
 ```
 Remember to add `--vsock 3` in crosvm start-up cmdline. And then, in vm:
 ```sh
