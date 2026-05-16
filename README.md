@@ -1,15 +1,12 @@
 # Warning:
-"Ask why crosvm is always cooking me before you wonder my non-rigorous expressions."
 
 >[!WARNING]
 > This document is last edited on May 2026, based on android 16. Some information in this document might be outdated.
 >
-> Anytime before you put any important data in your vm, make sure you have a backup; anytime before you deploy any important service on it, make sure to at least do the stress test for a while.       
->
 > AVF is still in early stage, and there are many things that can cause data loss or device crash. So, please be careful when using it.
+> Anytime before you put any important data in your vm, make sure you have a backup; anytime before you deploy any important service on it, make sure to at least do the stress test for a while.
 >
 > Seems the version of crosvm is always 0.1.0, this doc is based on crosvm binary in official com.android.virt on my device.   
->
 > Different firmware/crosvm version can make many issues unreproducible, you have to test the things yourself.
 >
 > I'm not a vm/hw developer, be careful of wrong information, and feel free to correct me or make a pull request.
@@ -49,6 +46,22 @@ mount $LOOP_DEV ./rootfs
 ```
 On some devices, loop mounting an image is banned by SELinux, for example Oneplus Ace 5 Ultra.       
 If you cannot loop-mount your rootfs properly, try editing SELinux policies, try `setenforce 0`(Dangerous!!! Do it if you really know what you're doing), try to make rootfs on another device, or try to migrate a tarball from erofs in vm.      
+# crosvm cmdline:
+| Command Line Argument | Example / Value | Description |
+| :--- | :--- | :--- |
+| `--disable-sandbox` | *None* | Disables Minijail sandboxing. Useful for avoiding sandbox or permission issues on Android. |
+| `--no-balloon` | *None* | Disables the virtio-balloon device (memory ballooning). |
+| `--protected-vm-without-firmware` | *None* | Bypasses pKVM (Protected KVM) image verification. |
+| `--socket` | `vm.sock` | Specifies the control socket path, allowing you to manage the VM lifecycle (e.g., running `crosvm stop vm.sock`). |
+| `--hugepages` | *None* | Allocates guest memory using hugepages, which may improve memory performance depending on the workload. |
+| `--params` | `"root=/dev/vda rw"` | Sets the kernel command-line parameters. |
+| `--swiotlb` | `256` | Configures the SWIOTLB (Software Input Output Translation Lookaside Buffer) size. Also see `swiotlb galgame` section in this doc.|
+| `--mem` | `2048` | Sets the amount of guest memory in megabytes (MB). |
+| `--cpus` | `8` | Sets the number of vCPU cores allocated to the virtual machine. |
+| `--host-cpu-topology`<br>`--virt-cpufreq` | *None* | Exposes the host CPU topology to the guest and enables virtual CPU frequency scaling. This can optimize performance, but should be avoided if the host hardware does not support it. |
+| `--net` | `tap-name=crosvm_tap` | Configures a virtual network interface using a specific host TAP device. |
+| `--shared-dir` | `/sdcard/shared:shared:type=fs` | Shares a directory with the guest via `virtiofs`. It can be mounted inside the guest using: `mount -t virtiofs shared /mnt`. |
+
 # Tensor pkvm:
 - Pixel 7a
 - Tensor G2
