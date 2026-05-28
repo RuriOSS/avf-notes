@@ -132,6 +132,7 @@ unset LD_PRELOAD
 - swiotlb is max to 256M on my device, or it will cause device crash and reboot.
 - It's the most unstable one among the three when using original /apex/com.android.virt/bin/crosvm on my device.
 - You can try [DroidVM](https://github.com/Droid-VM/DroidVM), seems they are working for Snapdragon gunyah, and did many hacks to make it work.
+- You can also try [qemu-android-gunyah](https://github.com/qemu-gunyah/qemu-android-gunyah), but I didn't test it.
 
 # Networking Magic:
 ## For wifi networks:
@@ -259,3 +260,4 @@ If you have any idea to improve this issue, please let me know.
 # See also:
 - https://github.com/Droid-VM/DroidVM
 - https://github.com/polygraphene/gunyah-on-sd-guide
+- https://github.com/qemu-gunyah/qemu-android-gunyah
